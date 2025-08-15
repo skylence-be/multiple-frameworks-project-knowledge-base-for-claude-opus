@@ -6,7 +6,7 @@
 - **Demographics**: 25-45 year old developers, 60% in North America/Europe, 30% in Asia
 - **Company Size**: 5-50 person startups to 500+ enterprise teams
 - **Industry**: SaaS, E-commerce, Healthcare, Education, FinTech
-- **Tech Stack**: Laravel 11+, PHP 8.2+, Livewire 3, Tailwind CSS
+- **Tech Stack**: Laravel 11+, PHP 8.2+ (supports 8.4 and 8.5), Livewire 3, Tailwind CSS
 - **Role**: Full-stack developers, Technical leads, CTOs, Product managers
 
 ### Key Pain Points

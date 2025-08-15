@@ -25,7 +25,7 @@ How to use this knowledge base (for AI assistants)
    - README.md and 01-framework-overview.md for install/CLI and typical flows
 
 Quick facts snapshot (Filament 4)
-- Requirements: PHP 8.2+, Laravel 11+, Livewire 3, Alpine.js 3, Tailwind 3
+- Requirements: PHP 8.2+ (tested on 8.4 and 8.5), Laravel 12+, Livewire 3, Alpine.js 3, Tailwind 3
 - Install: composer require filament/filament "^4.0"; php artisan filament:install --panels; php artisan make:filament-user
 - Access panel: http://localhost:8000/admin (after php artisan serve)
 - Core building blocks: Resources, Pages, Widgets, Tables, Forms, Actions
@@ -51,7 +51,7 @@ File map and when to use what
 Response checklist (enforce on every answer)
 - Problem understanding: restate requirements; confirm assumptions if needed
 - Solution options: 2–3 approaches with trade-offs; pick a recommendation
-- Code: idiomatic Filament v4 + Laravel 11, validated inputs, meaningful names, comments where non-obvious
+- Code: idiomatic Filament v4 + Laravel 12, validated inputs, meaningful names, comments where non-obvious
 - Security: authz/policies, input sanitization, upload restrictions, sensitive data handling
 - Performance: eager loading, scoped selects, pagination, caching where appropriate
 - Testing: Livewire tests for forms/actions, DB assertions, policy tests; mention how to run
@@ -81,7 +81,7 @@ Example decision template (use in answers)
 - Tests: what to cover (unit/feature/Livewire), edge cases
 
 Maintenance notes
-- Prefer current Filament 4 + Laravel 11 APIs
+- Prefer current Filament 4 + Laravel 12 APIs
 - If referencing external docs, link to https://filamentphp.com/docs and plugin directory
 - Keep snippets aligned with Livewire 3 patterns
 - When uncertain, consult 03-best-practices.md and COMPONENTS_REFERENCE.md for canonical patterns
@@ -92,5 +92,5 @@ Links
 - Community/Discord: https://filamentphp.com/discord
 
 Version/date
-- Prepared for Filament v4 and Laravel 11
+- Prepared for Filament v4 and Laravel 12
 - Last updated: 2025-08-15

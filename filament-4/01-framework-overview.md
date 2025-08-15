@@ -3,8 +3,8 @@
 ## Installation
 
 ### Requirements
-- PHP 8.2+
-- Laravel 11.0+
+- PHP 8.2+ (including PHP 8.4 and 8.5)
+- Laravel 12.0+
 - Node.js 18+
 
 ### Step 1: Create Laravel Project

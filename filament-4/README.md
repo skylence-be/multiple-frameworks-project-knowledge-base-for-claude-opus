@@ -58,8 +58,8 @@ Filament is a full-stack framework for accelerated Laravel development, providin
 
 ## Technical Requirements
 
-- PHP 8.2 or higher
-- Laravel 11.0 or higher
+- PHP 8.2 or higher (verified on 8.4 and 8.5)
+- Laravel 12.0 or higher
 - Livewire 3.0
 - Alpine.js 3.0
 - Tailwind CSS 3.0
