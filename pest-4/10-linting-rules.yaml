@@ -1,0 +1,339 @@
+# Pest Linting Rules Configuration
+
+# Core Pest/PHPUnit Configuration
+phpunit:
+  # Test file naming
+  test_file_suffix: Test.php
+  test_directory: tests
+  
+  # Assertions
+  assertions:
+    - use_pest_expectations: true
+    - prefer_specific_assertions: true
+    - no_assertEquals_for_scalar: true
+    - no_assertion_in_loop_without_message: true
+  
+  # Test structure
+  structure:
+    - max_test_method_length: 50
+    - max_setup_method_length: 20
+    - require_data_provider_description: true
+    - no_conditional_assertions: true
+
+# Pest-specific rules
+pest:
+  # Syntax preferences
+  syntax:
+    - prefer_it_over_test: false  # Allow both
+    - prefer_expect_over_assert: true
+    - use_higher_order_expectations: true
+    - use_method_chaining: true
+  
+  # Organization
+  organization:
+    - group_related_tests_with_describe: true
+    - use_datasets_for_similar_tests: true
+    - separate_unit_and_feature_tests: true
+  
+  # Coverage requirements
+  coverage:
+    - minimum_coverage: 80
+    - require_covers_annotation: false  # Pest handles differently
+    - exclude_data_providers_from_coverage: true
+
+# PHP Code Style for Tests
+php_cs_fixer:
+  rules:
+    # General
+    '@PSR12': true
+    '@PHP82Migration': true
+    
+    # Arrays
+    array_syntax:
+      syntax: short
+    trailing_comma_in_multiline:
+      elements:
+        - arrays
+        - arguments
+        - parameters
+    
+    # Classes
+    final_class: false  # Tests don't need to be final
+    class_attributes_separation:
+      elements:
+        const: one
+        property: one
+        method: one
+    
+    # Functions
+    function_declaration:
+      closure_function_spacing: one
+    method_argument_space:
+      on_multiline: ensure_fully_multiline
+    
+    # Imports
+    ordered_imports:
+      sort_algorithm: alpha
+    no_unused_imports: true
+    single_import_per_statement: true
+    
+    # Strings
+    single_quote: true
+    heredoc_to_nowdoc: true
+    
+    # Operators
+    binary_operator_spaces:
+      default: single_space
+    concat_space:
+      spacing: one
+    
+    # Control structures
+    no_superfluous_if: true
+    simplified_if_return: true
+    
+    # Comments
+    single_line_comment_style:
+      comment_types:
+        - hash
+    multiline_comment_opening_closing: true
+
+# PHPStan Configuration for Tests
+phpstan:
+  level: 6  # Lower for tests due to mocking
+  paths:
+    - tests
+  
+  parameters:
+    # Pest-specific
+    pest:
+      enable: true
+      test_directories:
+        - tests
+    
+    # Type coverage
+    type_coverage:
+      return_type: 90
+      param_type: 90
+      property_type: 90
+    
+    # Ignore patterns
+    ignoreErrors:
+      - '#Call to an undefined method Mockery#'
+      - '#Call to an undefined method.*Mock#'
+      - '#Access to an undefined property.*expectations#'
+    
+    # Treat Pest globals
+    earlyTerminatingFunctionCalls:
+      - expect
+      - test
+      - it
+      - uses
+
+# Pest Plugin Rules
+pest_plugins:
+  # Architecture plugin
+  architecture:
+    rules:
+      - no_debug_functions:
+          forbidden:
+            - dd
+            - dump
+            - var_dump
+            - print_r
+            - die
+            - exit
+      
+      - enforce_test_suffix:
+          pattern: '*Test.php'
+      
+      - enforce_namespace_structure:
+          unit_namespace: 'Tests\Unit'
+          feature_namespace: 'Tests\Feature'
+  
+  # Watch mode
+  watch:
+    paths:
+      - app
+      - tests
+    ignore:
+      - vendor
+      - node_modules
+      - .pest
+
+# Custom Pest Rules
+custom_rules:
+  # Test quality
+  test_quality:
+    - name: avoid_sleep_in_tests
+      pattern: '/sleep\(/'
+      message: 'Use proper waiting mechanisms instead of sleep()'
+      severity: error
+    
+    - name: no_vardump_in_tests
+      pattern: '/var_dump|print_r/'
+      message: 'Remove debug statements from tests'
+      severity: error
+    
+    - name: require_assertion
+      pattern: '/^test.*\{[^}]*\}$/s'
+      require: '/expect\(|assert/'
+      message: 'Test must contain at least one assertion'
+      severity: error
+  
+  # Naming conventions
+  naming:
+    - name: test_method_naming
+      pattern: '/^(test_|it_)/'
+      message: 'Test methods should start with test_ or it_'
+      severity: warning
+    
+    - name: dataset_naming
+      pattern: '/^dataset\([\'"]([a-z_]+)[\'"]/
+      message: 'Dataset names should use snake_case'
+      severity: warning
+  
+  # Best practices
+  best_practices:
+    - name: use_factories_over_manual_creation
+      pattern: '/new (User|Model)\(/'
+      suggest: 'User::factory()->create()'
+      message: 'Use factories for model creation'
+      severity: warning
+    
+    - name: avoid_hardcoded_ids
+      pattern: '/[\'"\[](id|user_id|post_id)[\'"\]]\s*=>\s*\d+/'
+      message: 'Avoid hardcoded IDs in tests'
+      severity: warning
+    
+    - name: use_carbon_for_dates
+      pattern: '/new DateTime|date\(|strtotime\(/'
+      suggest: 'Carbon::now() or Carbon::parse()'
+      message: 'Use Carbon for date manipulation'
+      severity: info
+
+# IDE Integration
+ide:
+  # PHPStorm/IntelliJ
+  phpstorm:
+    inspection_profile: Pest
+    code_style_scheme: Pest
+    file_templates:
+      - pest_unit_test
+      - pest_feature_test
+    
+  # VS Code
+  vscode:
+    extensions:
+      - bmewburn.vscode-intelephense-client
+      - open-southeners.pest-ide-tools
+    settings:
+      'editor.formatOnSave': true
+      'php.suggest.basic': false
+      'pest.enable': true
+
+# Git Hooks
+git_hooks:
+  pre_commit:
+    - pest_lint:
+        command: './vendor/bin/pest --lint'
+        stop_on_failure: true
+    
+    - pest_architecture:
+        command: './vendor/bin/pest --arch'
+        stop_on_failure: true
+  
+  pre_push:
+    - pest_test:
+        command: './vendor/bin/pest --stop-on-failure'
+        stop_on_failure: true
+    
+    - pest_coverage:
+        command: './vendor/bin/pest --coverage --min=80'
+        stop_on_failure: false
+
+# CI/CD Linting
+ci:
+  github_actions:
+    - name: Pest Lint
+      run: |
+        ./vendor/bin/pest --lint
+        ./vendor/bin/pest --arch
+        ./vendor/bin/pest --type-coverage
+  
+  gitlab_ci:
+    pest_quality:
+      script:
+        - ./vendor/bin/pest --lint
+        - ./vendor/bin/pest --arch
+        - ./vendor/bin/pest --profanity
+
+# Pest Configuration Validation
+validation:
+  pest_php:
+    required_sections:
+      - uses
+      - expectations
+    
+    forbidden_functions:
+      - eval
+      - exec
+      - system
+    
+    required_traits:
+      - RefreshDatabase  # for Feature tests
+      - WithFaker        # when using faker
+
+# Documentation Standards
+documentation:
+  test_comments:
+    - require_description_for_complex_tests: true
+    - require_covers_annotation: false  # Pest uses covers() function
+    - require_group_annotation: true
+    - max_comment_line_length: 80
+  
+  examples:
+    good: |
+      /**
+       * Ensure that authenticated users can access their profile
+       * @group auth
+       */
+      test('authenticated user can view profile', function () {
+          // Test implementation
+      });
+    
+    bad: |
+      // test
+      test('test1', function () {
+          // code
+      });
+
+# Performance Rules
+performance:
+  - name: avoid_unnecessary_database_operations
+    pattern: '/->create\(.*->refresh\(\)/'
+    message: 'Avoid unnecessary database refreshes'
+    severity: warning
+  
+  - name: use_factories_make_when_possible
+    pattern: '/factory\(\)->create\([^\)]*\)(?!.*assertDatabase)/'
+    suggest: 'Consider using ->make() if not asserting database'
+    severity: info
+  
+  - name: limit_factory_creation_in_loops
+    pattern: '/for.*factory\(\)->create/'
+    suggest: 'Use factory()->count(n)->create() instead'
+    severity: warning
+
+# Security Rules for Tests
+security:
+  - name: no_real_credentials
+    patterns:
+      - '/api_key.*=.*[A-Za-z0-9]{32,}/'
+      - '/password.*=.*[A-Za-z0-9!@#$%]{8,}/'
+    message: 'Do not use real credentials in tests'
+    severity: error
+  
+  - name: use_env_for_sensitive_data
+    pattern: '/["\']sk_live|pk_live|secret_/'
+    message: 'Use environment variables for sensitive data'
+    severity: error
